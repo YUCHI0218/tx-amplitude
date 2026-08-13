@@ -1,0 +1,595 @@
+{
+  "generated_at": "2026-08-08T21:19:45+08:00",
+  "instrument": "臺股期貨 TX（大台） · 近月連續（每日取成交量最大合約）· 資料來源：臺灣期貨交易所",
+  "defs": "日振幅 = 當日最高 − 最低；% = (高−低) ÷ 昨結算 × 100。全時段 = 當日日盤與其後夜盤合併高低。",
+  "sessions": {
+    "day": {
+      "label": "日盤 08:45–13:45",
+      "latest": {
+        "date": "2026/07/31",
+        "amp_pt": 1646.0,
+        "amp_pct": 4.09,
+        "high": 43951.0,
+        "low": 42305.0
+      },
+      "ma": {
+        "pt": {
+          "ma5": 1571.4,
+          "ma10": 1261.1,
+          "ma20": 1236.6
+        },
+        "pct": {
+          "ma5": 3.78,
+          "ma10": 2.98,
+          "ma20": 2.81
+        }
+      },
+      "window20": {
+        "n": 20,
+        "max_pt": {
+          "date": "2026/07/29",
+          "amp_pt": 2628.0,
+          "amp_pct": 6.32
+        },
+        "min_pt": {
+          "date": "2026/07/08",
+          "amp_pt": 720.0,
+          "amp_pct": 1.58
+        },
+        "max_pct": {
+          "date": "2026/07/29",
+          "amp_pt": 2628.0,
+          "amp_pct": 6.32
+        },
+        "min_pct": {
+          "date": "2026/07/08",
+          "amp_pt": 720.0,
+          "amp_pct": 1.58
+        }
+      },
+      "percentile": {
+        "lookback": 22,
+        "pt": 90.9,
+        "pct": 90.5
+      },
+      "series": [
+        {
+          "date": "2026/07/01",
+          "amp_pt": 800.0,
+          "amp_pct": null,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/02",
+          "amp_pt": 1207.0,
+          "amp_pct": 2.56,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/03",
+          "amp_pt": 1476.0,
+          "amp_pct": 3.17,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/06",
+          "amp_pt": 966.0,
+          "amp_pct": 2.06,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/07",
+          "amp_pt": 1588.0,
+          "amp_pct": 3.39,
+          "ma5_pt": 1207.4,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/08",
+          "amp_pt": 720.0,
+          "amp_pct": 1.58,
+          "ma5_pt": 1191.4,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 2.55,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/09",
+          "amp_pt": 827.0,
+          "amp_pct": 1.82,
+          "ma5_pt": 1115.4,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 2.4,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/13",
+          "amp_pt": 1127.0,
+          "amp_pct": 2.47,
+          "ma5_pt": 1045.6,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 2.26,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/14",
+          "amp_pt": 1612.0,
+          "amp_pct": 3.54,
+          "ma5_pt": 1174.8,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 2.56,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/15",
+          "amp_pt": 763.0,
+          "amp_pct": 1.7,
+          "ma5_pt": 1009.8,
+          "ma10_pt": 1108.6,
+          "ma20_pt": null,
+          "ma5_pct": 2.22,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/16",
+          "amp_pt": 1057.0,
+          "amp_pct": 2.29,
+          "ma5_pt": 1077.2,
+          "ma10_pt": 1134.3,
+          "ma20_pt": null,
+          "ma5_pct": 2.36,
+          "ma10_pct": 2.46,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/17",
+          "amp_pt": 1985.0,
+          "amp_pct": 4.34,
+          "ma5_pt": 1308.8,
+          "ma10_pt": 1212.1,
+          "ma20_pt": null,
+          "ma5_pct": 2.87,
+          "ma10_pct": 2.63,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/20",
+          "amp_pt": 1043.0,
+          "amp_pct": 2.45,
+          "ma5_pt": 1292.0,
+          "ma10_pt": 1168.8,
+          "ma20_pt": null,
+          "ma5_pct": 2.87,
+          "ma10_pct": 2.56,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/21",
+          "amp_pt": 1207.0,
+          "amp_pct": 2.83,
+          "ma5_pt": 1211.0,
+          "ma10_pt": 1192.9,
+          "ma20_pt": null,
+          "ma5_pct": 2.72,
+          "ma10_pct": 2.64,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/22",
+          "amp_pt": 751.0,
+          "amp_pct": 1.69,
+          "ma5_pt": 1208.6,
+          "ma10_pt": 1109.2,
+          "ma20_pt": null,
+          "ma5_pct": 2.72,
+          "ma10_pct": 2.47,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/23",
+          "amp_pt": 894.0,
+          "amp_pct": 2.0,
+          "ma5_pt": 1176.0,
+          "ma10_pt": 1126.6,
+          "ma20_pt": null,
+          "ma5_pct": 2.66,
+          "ma10_pct": 2.51,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/24",
+          "amp_pt": 859.0,
+          "amp_pct": 1.91,
+          "ma5_pt": 950.8,
+          "ma10_pt": 1129.8,
+          "ma20_pt": null,
+          "ma5_pct": 2.18,
+          "ma10_pct": 2.52,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/27",
+          "amp_pt": 907.0,
+          "amp_pct": 2.07,
+          "ma5_pt": 923.6,
+          "ma10_pt": 1107.8,
+          "ma20_pt": null,
+          "ma5_pct": 2.1,
+          "ma10_pct": 2.48,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/28",
+          "amp_pt": 1111.0,
+          "amp_pct": 2.53,
+          "ma5_pt": 904.4,
+          "ma10_pt": 1057.7,
+          "ma20_pt": null,
+          "ma5_pct": 2.04,
+          "ma10_pct": 2.38,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/29",
+          "amp_pt": 2628.0,
+          "amp_pct": 6.32,
+          "ma5_pt": 1279.8,
+          "ma10_pt": 1244.2,
+          "ma20_pt": 1176.4,
+          "ma5_pct": 2.97,
+          "ma10_pct": 2.84,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/30",
+          "amp_pt": 1565.0,
+          "amp_pct": 3.88,
+          "ma5_pt": 1414.0,
+          "ma10_pt": 1295.0,
+          "ma20_pt": 1214.7,
+          "ma5_pct": 3.34,
+          "ma10_pct": 3.0,
+          "ma20_pct": 2.73
+        },
+        {
+          "date": "2026/07/31",
+          "amp_pt": 1646.0,
+          "amp_pct": 4.09,
+          "ma5_pt": 1571.4,
+          "ma10_pt": 1261.1,
+          "ma20_pt": 1236.6,
+          "ma5_pct": 3.78,
+          "ma10_pct": 2.98,
+          "ma20_pct": 2.81
+        }
+      ]
+    },
+    "full": {
+      "label": "全時段（含夜盤到 05:00）",
+      "latest": {
+        "date": "2026/07/31",
+        "amp_pt": 4085.0,
+        "amp_pct": 10.14,
+        "high": 43951.0,
+        "low": 39866.0
+      },
+      "ma": {
+        "pt": {
+          "ma5": 2485.0,
+          "ma10": 1906.9,
+          "ma20": 1770.7
+        },
+        "pct": {
+          "ma5": 5.97,
+          "ma10": 4.51,
+          "ma20": 4.03
+        }
+      },
+      "window20": {
+        "n": 20,
+        "max_pt": {
+          "date": "2026/07/31",
+          "amp_pt": 4085.0,
+          "amp_pct": 10.14
+        },
+        "min_pt": {
+          "date": "2026/07/23",
+          "amp_pt": 944.0,
+          "amp_pct": 2.11
+        },
+        "max_pct": {
+          "date": "2026/07/31",
+          "amp_pt": 4085.0,
+          "amp_pct": 10.14
+        },
+        "min_pct": {
+          "date": "2026/07/23",
+          "amp_pt": 944.0,
+          "amp_pct": 2.11
+        }
+      },
+      "percentile": {
+        "lookback": 22,
+        "pt": 100.0,
+        "pct": 100.0
+      },
+      "series": [
+        {
+          "date": "2026/07/01",
+          "amp_pt": 1330.0,
+          "amp_pct": null,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/02",
+          "amp_pt": 1768.0,
+          "amp_pct": 3.74,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/03",
+          "amp_pt": 1952.0,
+          "amp_pct": 4.19,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/06",
+          "amp_pt": 1016.0,
+          "amp_pct": 2.16,
+          "ma5_pt": null,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/07",
+          "amp_pt": 1901.0,
+          "amp_pct": 4.06,
+          "ma5_pt": 1593.4,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": null,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/08",
+          "amp_pt": 1099.0,
+          "amp_pct": 2.41,
+          "ma5_pt": 1547.2,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 3.31,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/09",
+          "amp_pt": 1583.0,
+          "amp_pct": 3.47,
+          "ma5_pt": 1510.2,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 3.26,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/13",
+          "amp_pt": 1244.0,
+          "amp_pct": 2.73,
+          "ma5_pt": 1368.6,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 2.96,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/14",
+          "amp_pt": 2036.0,
+          "amp_pct": 4.47,
+          "ma5_pt": 1572.6,
+          "ma10_pt": null,
+          "ma20_pt": null,
+          "ma5_pct": 3.43,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/15",
+          "amp_pt": 1521.0,
+          "amp_pct": 3.4,
+          "ma5_pt": 1496.6,
+          "ma10_pt": 1545.0,
+          "ma20_pt": null,
+          "ma5_pct": 3.29,
+          "ma10_pct": null,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/16",
+          "amp_pt": 1069.0,
+          "amp_pct": 2.32,
+          "ma5_pt": 1490.6,
+          "ma10_pt": 1518.9,
+          "ma20_pt": null,
+          "ma5_pct": 3.28,
+          "ma10_pct": 3.29,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/17",
+          "amp_pt": 2923.0,
+          "amp_pct": 6.4,
+          "ma5_pt": 1758.6,
+          "ma10_pt": 1634.4,
+          "ma20_pt": null,
+          "ma5_pct": 3.86,
+          "ma10_pct": 3.56,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/20",
+          "amp_pt": 1598.0,
+          "amp_pct": 3.75,
+          "ma5_pt": 1829.4,
+          "ma10_pt": 1599.0,
+          "ma20_pt": null,
+          "ma5_pct": 4.07,
+          "ma10_pct": 3.52,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/21",
+          "amp_pt": 1764.0,
+          "amp_pct": 4.13,
+          "ma5_pt": 1775.0,
+          "ma10_pt": 1673.8,
+          "ma20_pt": null,
+          "ma5_pct": 4.0,
+          "ma10_pct": 3.71,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/22",
+          "amp_pt": 950.0,
+          "amp_pct": 2.14,
+          "ma5_pt": 1660.8,
+          "ma10_pt": 1578.7,
+          "ma20_pt": null,
+          "ma5_pct": 3.75,
+          "ma10_pct": 3.52,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/23",
+          "amp_pt": 944.0,
+          "amp_pct": 2.11,
+          "ma5_pt": 1635.8,
+          "ma10_pt": 1563.2,
+          "ma20_pt": null,
+          "ma5_pct": 3.71,
+          "ma10_pct": 3.49,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/24",
+          "amp_pt": 1388.0,
+          "amp_pct": 3.09,
+          "ma5_pt": 1328.8,
+          "ma10_pt": 1543.7,
+          "ma20_pt": null,
+          "ma5_pct": 3.05,
+          "ma10_pct": 3.45,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/27",
+          "amp_pt": 1130.0,
+          "amp_pct": 2.58,
+          "ma5_pt": 1235.2,
+          "ma10_pt": 1532.3,
+          "ma20_pt": null,
+          "ma5_pct": 2.81,
+          "ma10_pct": 3.44,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/28",
+          "amp_pt": 2725.0,
+          "amp_pct": 6.21,
+          "ma5_pt": 1427.4,
+          "ma10_pt": 1601.2,
+          "ma20_pt": null,
+          "ma5_pct": 3.23,
+          "ma10_pct": 3.61,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/29",
+          "amp_pt": 2666.0,
+          "amp_pct": 6.41,
+          "ma5_pt": 1770.6,
+          "ma10_pt": 1715.7,
+          "ma20_pt": 1630.3,
+          "ma5_pct": 4.08,
+          "ma10_pct": 3.92,
+          "ma20_pct": null
+        },
+        {
+          "date": "2026/07/30",
+          "amp_pt": 1819.0,
+          "amp_pct": 4.51,
+          "ma5_pt": 1945.6,
+          "ma10_pt": 1790.7,
+          "ma20_pt": 1654.8,
+          "ma5_pct": 4.56,
+          "ma10_pct": 4.13,
+          "ma20_pct": 3.71
+        },
+        {
+          "date": "2026/07/31",
+          "amp_pt": 4085.0,
+          "amp_pct": 10.14,
+          "ma5_pt": 2485.0,
+          "ma10_pt": 1906.9,
+          "ma20_pt": 1770.7,
+          "ma5_pct": 5.97,
+          "ma10_pct": 4.51,
+          "ma20_pct": 4.03
+        }
+      ]
+    }
+  }
+}
