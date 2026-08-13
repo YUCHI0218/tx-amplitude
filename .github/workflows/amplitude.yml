@@ -1,0 +1,42 @@
+name: 台指期振幅每日更新
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "30 22 * * 0-4"
+    - cron: "20 6 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: amplitude
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 安裝套件
+        run: pip install -r requirements.txt
+
+      - name: 抓期交所資料並計算
+        run: python fetch_amplitude.py --years 3 --out amplitude_data.json --no-dashboard
+
+      - name: 有變動才 commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add amplitude_data.json taifex_tx_cache.csv || true
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "資料更新 $(date -u '+%Y-%m-%d %H:%MZ')"
+            git push
+          else
+            echo "資料無變動，略過。"
+          fi
