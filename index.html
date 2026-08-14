@@ -96,6 +96,26 @@
   .wv{font-family:var(--mono); font-size:16px; font-weight:600}
   .wv.max{color:var(--hot)} .wv.min{color:var(--cool)}
 
+  .sp{background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin:2px 0 10px}
+  .sphead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px}
+  .spt{font-size:11.5px; color:var(--faint)}
+  .spn{display:inline-flex; gap:3px}
+  .nbtn{appearance:none; background:transparent; border:1px solid var(--line); color:var(--muted);
+    font-family:var(--sans); font-size:11px; padding:2px 7px; border-radius:6px; cursor:pointer}
+  .nbtn.on{background:var(--accent); color:#1a1206; border-color:var(--accent); font-weight:600}
+  .nbtn:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .sprow{display:flex; align-items:baseline; justify-content:space-between; gap:8px; padding:3px 0}
+  .spk{font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px}
+  .pin{width:7px; height:7px; border-radius:2px; display:inline-block}
+  .pin.hot{background:var(--hot)} .pin.cool{background:var(--cool)} .pin.mid{background:var(--accent)}
+  .spv{display:flex; align-items:baseline; gap:7px}
+  .spv b{font-family:var(--mono); font-size:16px; font-weight:600; color:var(--ink)}
+  .spv b.acc{color:var(--accent)}
+  .spv em{font-style:normal; font-family:var(--mono); font-size:11px; color:var(--faint)}
+  .spbar{display:flex; height:5px; border-radius:3px; overflow:hidden; background:#0d1417; margin-top:7px}
+  .spfill{height:100%; background:var(--hot); transition:width .35s}
+  .spbar{position:relative} .spbar::after{content:''; position:absolute; inset:0; background:var(--cool); z-index:-1}
+  .spbar{background:var(--cool)}
   .chartbox{height:300px; margin:6px -4px 4px; position:relative}
   @media(max-width:880px){.chartbox{height:240px}}
   .chartbox .nochart{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--faint); font-size:12px; text-align:center; padding:12px}
@@ -5742,7 +5762,7 @@
 <script>
 const U = { pt:{ampKey:'amp_pt',dp:0,unitLabel:'點',axis:'振幅（點）'}, pct:{ampKey:'amp_pct',dp:2,unitLabel:'%',axis:'振幅（%）'} };
 const MODES=['day','night'];
-let unit='pt', DATA=null, selIdx=0, mode='day', layout='single';
+let unit='pt', DATA=null, selIdx=0, mode='day', layout='single', spreadN=10;
 
 function fmt(v,u){ return (v===null||v===undefined||Number.isNaN(v))?'—':Number(v).toFixed(U[u].dp); }
 function heat(t){ t=Math.max(0,Math.min(1,t||0)); const c=[[75,184,201],[217,180,90],[232,102,58]]; let a,b,f;
@@ -5802,14 +5822,20 @@ function computeView(key,i){
     if(best==null||(how==='max'?v>best.v:v<best.v)) best={v,date:r.date}; }); return best; };
   const pct=(rows,k,val)=>{ const a=rows.map(r=>r[k]).filter(v=>v!=null); if(!a.length||val==null)return null;
     return a.filter(v=>v<=val).length/a.length*100; };
-  const wins={};
+  const wins={}, spread={};
   [5,10,20].forEach(w=>{ const rows=s.slice(Math.max(0,i-w+1), i+1);
     wins[w]={ pt:{max:ext(rows,'amp_pt','max'),min:ext(rows,'amp_pt','min')},
-              pct:{max:ext(rows,'amp_pct','max'),min:ext(rows,'amp_pct','min')} }; });
+              pct:{max:ext(rows,'amp_pct','max'),min:ext(rows,'amp_pct','min')} };
+    const st=k=>{ const a=rows.map(r=>r[k]).filter(v=>v!=null); if(!a.length) return null;
+      const avg=a.reduce((x,y)=>x+y,0)/a.length;
+      const hi=a.filter(v=>v>avg), lo=a.filter(v=>v<=avg);
+      const mean=arr=>arr.length? arr.reduce((x,y)=>x+y,0)/arr.length : null;
+      return {n:a.length, avg, aboveDays:hi.length, aboveAvg:mean(hi), belowDays:lo.length, belowAvg:mean(lo)}; };
+    spread[w]={ pt:st('amp_pt'), pct:st('amp_pct') }; });
   return { date:row.date, ohlc:{open:row.open,high:row.high,low:row.low,close:row.close},
     amp:{pt:row.amp_pt,pct:row.amp_pct},
     ma:{ pt:{ma5:row.ma5_pt,ma10:row.ma10_pt,ma20:row.ma20_pt}, pct:{ma5:row.ma5_pct,ma10:row.ma10_pct,ma20:row.ma20_pct} },
-    wins,
+    wins, spread,
     pctile:{ pt:pct(lb,'amp_pt',row.amp_pt), pct:pct(lb,'amp_pct',row.amp_pct), n:lb.length } };
 }
 
@@ -5840,6 +5866,14 @@ const panelHTML = `
     <div class="wcell"><div class="wt">近20日</div>
       <div class="wr"><span class="wk">高</span><span class="wv max" id="e20max"></span></div>
       <div class="wr"><span class="wk">低</span><span class="wv min" id="e20min"></span></div></div>
+  </div>
+  <div class="sp">
+    <div class="sphead"><span class="spt">振幅分布統計</span>
+      <span class="spn"><button class="nbtn" data-n="5">5日</button><button class="nbtn on" data-n="10">10日</button><button class="nbtn" data-n="20">20日</button></span></div>
+    <div class="sprow"><span class="spk"><i class="pin hot"></i>大於平均的振幅</span><span class="spv"><b id="spAboveAvg"></b><em id="spAboveDays"></em></span></div>
+    <div class="sprow"><span class="spk"><i class="pin mid"></i><span id="spAvgLbl">平均振幅</span></span><span class="spv"><b id="spAvg" class="acc"></b></span></div>
+    <div class="sprow"><span class="spk"><i class="pin cool"></i>小於平均的振幅</span><span class="spv"><b id="spBelowAvg"></b><em id="spBelowDays"></em></span></div>
+    <div class="spbar"><div class="spfill" id="spFill"></div></div>
   </div>
   <div class="chartbox"><canvas id="cv"></canvas><div class="nochart" id="nochart" style="display:none">圖表函式庫未載入（離線）— 數字仍為完整資料</div></div>`;
 
@@ -5877,6 +5911,20 @@ function renderPanelInto(el, key){
   [5,10,20].forEach(w=>{ const mx=v.wins[w][u].max, mn=v.wins[w][u].min;
     $('e'+w+'max').textContent=mx?fmt(mx.v,u):'—';
     $('e'+w+'min').textContent=mn?fmt(mn.v,u):'—'; });
+
+  // 振幅分布統計（大於/小於平均的天數）
+  const sp=v.spread[spreadN][u];
+  el.querySelectorAll('.nbtn').forEach(b=>{ b.classList.toggle('on', +b.dataset.n===spreadN);
+    b.onclick=()=>{ spreadN=+b.dataset.n; render(); }; });
+  $('spAvgLbl').textContent=spreadN+'日平均振幅';
+  if(sp){
+    $('spAvg').textContent=fmt(sp.avg,u);
+    $('spAboveAvg').textContent=sp.aboveAvg!=null?fmt(sp.aboveAvg,u):'—';
+    $('spBelowAvg').textContent=sp.belowAvg!=null?fmt(sp.belowAvg,u):'—';
+    $('spAboveDays').textContent='('+sp.aboveDays+'天)';
+    $('spBelowDays').textContent='('+sp.belowDays+'天)';
+    $('spFill').style.width=(sp.n? sp.aboveDays/sp.n*100 : 0).toFixed(1)+'%';
+  }
   drawChartInto(el, key);
 }
 function drawChartInto(el, key){
