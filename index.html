@@ -11861,10 +11861,13 @@ function drawChartInto(el, key){
   });
 }
 function renderTable(){
-  const s=DATA.sessions[mode].series, start=Math.max(0,s.length-20);
-  document.getElementById('tabTitle').textContent='近 20 個交易日 · '+DATA.sessions[mode].label;
+  const s=DATA.sessions[mode].series;
+  const end=selIdx, start=Math.max(0,end-19);   // 以「選定日」為最新一列，往前 20 天
+  const isLatest = end===s.length-1;
+  document.getElementById('tabTitle').textContent =
+    (isLatest?'近 20 個交易日':'截至 '+s[end].date+' 的 20 個交易日')+' · '+DATA.sessions[mode].label;
   let html='';
-  for(let i=s.length-1;i>=start;i--){ const r=s[i];
+  for(let i=end;i>=start;i--){ const r=s[i];
     html+=`<tr data-i="${i}" class="${i===selIdx?'sel':''}"><td>${r.date}</td>`
       +`<td>${fmt(r.open,'pt')}</td><td>${fmt(r.high,'pt')}</td><td>${fmt(r.low,'pt')}</td><td>${fmt(r.close,'pt')}</td>`
       +`<td>${fmt(r.amp_pt,'pt')}</td><td>${fmt(r.amp_pct,'pct')}</td></tr>`; }
