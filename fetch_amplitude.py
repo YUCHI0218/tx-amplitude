@@ -56,7 +56,9 @@ SESSION_MAP = {
 }
 
 PCT_LOOKBACK = 250   # 百分位回看樣本數（約一年交易日）
-CHART_DAYS = 250     # 前端時序圖與統計可用的最近天數（約一年，星期幾統計才有足夠樣本）
+CHART_DAYS = 500     # 前端可用的最近交易日數（約 2 年）。抓取仍為 3 年（--years 3），
+                     # 較長的完整歷史保留在 taifex_tx_cache.csv；此處僅控制送到網頁的長度。
+                     # 想更長改大即可（3 年約 730），但 JSON 會變大、手機載入變慢。
 WIN = 20             # 近 N 日最高/最低振幅視窗
 COMMODITY = "TX"     # 期交所商品代碼：TX=臺股期貨(大台)，MTX=小型臺指(小台)
 TAIFEX_URL = "https://www.taifex.com.tw/cht/3/futDataDown"
@@ -358,11 +360,13 @@ def compute_metrics(df: pd.DataFrame) -> dict:
     return {
         "generated_at": dt.datetime.now(TAIPEI).isoformat(timespec="seconds"),
         "instrument": f"{name} · 近月連續（每日取成交量最大合約）· 資料來源：臺灣期貨交易所",
-        "defs": "日振幅 = 當日最高 − 最低；% = (高−低) ÷ 昨結算 × 100。日盤=08:45–13:45；夜盤=前一日15:00至當日05:00；全時段=兩者合併。",
+        "defs": "日振幅 = 當日最高 − 最低；% = (高−低) ÷ 昨結算 × 100。日盤=08:45–13:45；夜盤=前一日15:00至當日05:00。",
+        # 註：另有「全時段（日盤+夜盤合併）」可算，但前端未使用，為縮小檔案不輸出。
+        # 需要時把下面 "full" 那行取消註解即可。
         "sessions": {
             "day": summarize(day_s, "日盤 08:45–13:45"),
             "night": summarize(night_s, "夜盤 15:00–05:00"),
-            "full": summarize(full_s, "全時段（含夜盤）"),
+            # "full": summarize(full_s, "全時段（含夜盤）"),
         },
     }
 
@@ -452,13 +456,13 @@ def main():
 
     data = compute_metrics(df)
     with open(a.out, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, separators=(",", ":"))  # 壓縮輸出，縮小檔案
     if not a.no_dashboard:
         _self_contained_dashboard(a.out, os.path.dirname(os.path.abspath(__file__)))
 
-    dd, ff = data["sessions"]["day"]["latest"], data["sessions"]["full"]["latest"]
+    dd, nn = data["sessions"]["day"]["latest"], data["sessions"]["night"]["latest"]
     _log(f"✓ 寫出 {a.out}")
-    _log(f"  最新 {dd['date']}｜日盤 {dd['amp_pt']}點 / {dd['amp_pct']}%｜全時段 {ff['amp_pt']}點 / {ff['amp_pct']}%")
+    _log(f"  最新 {dd['date']}｜日盤 {dd['amp_pt']}點 / {dd['amp_pct']}%｜夜盤 {nn['amp_pt']}點 / {nn['amp_pct']}%")
 
 
 if __name__ == "__main__":
