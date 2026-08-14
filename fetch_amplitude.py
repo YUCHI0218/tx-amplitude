@@ -56,7 +56,7 @@ SESSION_MAP = {
 }
 
 PCT_LOOKBACK = 250   # 百分位回看樣本數（約一年交易日）
-CHART_DAYS = 120     # 前端時序圖顯示的最近天數
+CHART_DAYS = 250     # 前端時序圖與統計可用的最近天數（約一年，星期幾統計才有足夠樣本）
 WIN = 20             # 近 N 日最高/最低振幅視窗
 COMMODITY = "TX"     # 期交所商品代碼：TX=臺股期貨(大台)，MTX=小型臺指(小台)
 TAIFEX_URL = "https://www.taifex.com.tw/cht/3/futDataDown"
