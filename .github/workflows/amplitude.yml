@@ -26,14 +26,14 @@ jobs:
       - name: 安裝套件
         run: pip install -r requirements.txt
 
-      - name: 抓期交所資料並計算
+      - name: 抓期交所與證交所資料並計算
         run: python fetch_amplitude.py --years 3 --out amplitude_data.json --no-dashboard
 
       - name: 有變動才 commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add amplitude_data.json taifex_tx_cache.csv || true
+          git add amplitude_data.json taifex_tx_cache.csv twse_spot_cache.csv || true
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "資料更新 $(date -u '+%Y-%m-%d %H:%MZ')"
             git push
