@@ -62,6 +62,8 @@ CHART_DAYS = 500     # 前端可用的最近交易日數（約 2 年）。抓取
 WIN = 20             # 近 N 日最高/最低振幅視窗
 COMMODITY = "TX"     # 期交所商品代碼：TX=臺股期貨(大台)，MTX=小型臺指(小台)
 TAIFEX_URL = "https://www.taifex.com.tw/cht/3/futDataDown"
+TWSE_URL = "https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_HIST"   # 發行量加權股價指數歷史資料（逐月）
+TWSE_URL_ALT = "https://www.twse.com.tw/indicesReport/MI_5MINS_HIST"  # 舊路徑備援
 
 
 def _log(*a):
@@ -216,6 +218,89 @@ def load_data(years: int, cache_path: str, force_full: bool = False) -> pd.DataF
     return allrows
 
 
+# ────────────────────────── 現貨（加權指數 TAIEX）──────────────────────────
+def _roc_or_ad_date(s: str) -> str:
+    """TWSE 日期可能是民國 '115/08/13' 或西元 '2026/08/13'，統一轉西元 'YYYY/MM/DD'。"""
+    s = str(s).strip()
+    p = s.replace("-", "/").split("/")
+    if len(p) != 3:
+        return ""
+    y = int(p[0])
+    if y < 1911:            # 民國年
+        y += 1911
+    return f"{y:04d}/{int(p[1]):02d}/{int(p[2]):02d}"
+
+
+def fetch_twse_spot(start: dt.date, end: dt.date) -> pd.DataFrame:
+    """抓 TAIEX 每日開高低收（逐月）。回傳欄位：date, s_open, s_high, s_low, s_close。
+    任何一個月失敗只會略過該月，不會中斷整個流程（現貨屬加值資訊，缺了仍可運作）。"""
+    import requests
+    sess = requests.Session()
+    sess.headers.update({"User-Agent": "Mozilla/5.0",
+                         "Referer": "https://www.twse.com.tw/zh/indices/taiex/mi-5min-hist.html"})
+    rows = []
+    cur = dt.date(start.year, start.month, 1)
+    while cur <= end:
+        ok = False
+        for url in (TWSE_URL, TWSE_URL_ALT):
+            try:
+                r = sess.get(url, params={"response": "json", "date": cur.strftime("%Y%m01")}, timeout=45)
+                r.raise_for_status()
+                j = r.json()
+            except Exception:  # noqa: BLE001
+                continue
+            data = j.get("data") or j.get("aaData") or []
+            if not data:
+                continue
+            for row in data:
+                if len(row) < 5:
+                    continue
+                d = _roc_or_ad_date(row[0])
+                if not d:
+                    continue
+                def num(x):
+                    try:
+                        return float(str(x).replace(",", "").strip())
+                    except (TypeError, ValueError):
+                        return None
+                rows.append({"date": d, "s_open": num(row[1]), "s_high": num(row[2]),
+                             "s_low": num(row[3]), "s_close": num(row[4])})
+            ok = True
+            break
+        if not ok:
+            _log(f"  現貨 {cur:%Y-%m}: 抓取失敗或無資料，略過")
+        time.sleep(0.3)
+        cur = dt.date(cur.year + 1, 1, 1) if cur.month == 12 else dt.date(cur.year, cur.month + 1, 1)
+    if not rows:
+        _log("⚠ 完全沒抓到現貨資料 → 價差欄位會是空的（不影響振幅功能）。")
+        return pd.DataFrame(columns=["date", "s_open", "s_high", "s_low", "s_close"])
+    return (pd.DataFrame(rows).drop_duplicates(subset=["date"], keep="last")
+            .sort_values("date").reset_index(drop=True))
+
+
+def load_spot(years: int, cache_path: str, force_full: bool = False) -> pd.DataFrame:
+    end = dt.date.today()
+    if (not force_full) and os.path.exists(cache_path):
+        old = pd.read_csv(cache_path)
+        old["date"] = old["date"].astype(str)
+        try:
+            last = _parse_date(old["date"].max())
+        except Exception:  # noqa: BLE001
+            last = end - dt.timedelta(days=int(years * 372))
+        _log(f"現貨增量更新：自 {last - dt.timedelta(days=7)} 起補抓")
+        new = fetch_twse_spot(last - dt.timedelta(days=7), end)
+        allr = pd.concat([old, new], ignore_index=True)
+    else:
+        start = end - dt.timedelta(days=int(years * 372))
+        _log(f"現貨完整回補：{start} ~ {end}")
+        allr = fetch_twse_spot(start, end)
+    if allr.empty:
+        return allr
+    allr = (allr.drop_duplicates(subset=["date"], keep="last").sort_values("date").reset_index(drop=True))
+    allr.to_csv(cache_path, index=False)
+    return allr
+
+
 # ────────────────────────── 計算（純函式，已用合成資料逐項驗證） ──────────────────────────
 def _normalize(df: pd.DataFrame) -> pd.DataFrame:
     df = df.rename(columns={c: c.lower() for c in df.columns}).copy()
@@ -346,6 +431,10 @@ def summarize(s: pd.DataFrame, label: str) -> dict:
                 "close": _num(r["close"], 0),
                 "amp_pt": _num(r["amp_pt"], 0),
                 "amp_pct": _num(r["amp_pct"], 2),
+                "spot": _num(r.get("s_close"), 0),          # 現貨(加權指數)收盤
+                "spot_chg": _num(r.get("s_chg"), 0),        # 現貨較昨收漲跌點數
+                "spot_chg_pct": _num(r.get("s_chg_pct"), 2),
+                "basis": _num(r.get("basis"), 0),           # 價差 = 期貨收 − 現貨收（正=正價差）
                 **{f"ma{w}_pt": _num(r[f"ma{w}_pt"], 1) for w in (5, 10, 20)},
                 **{f"ma{w}_pct": _num(r[f"ma{w}_pct"], 2) for w in (5, 10, 20)},
             }
@@ -354,15 +443,34 @@ def summarize(s: pd.DataFrame, label: str) -> dict:
     }
 
 
-def compute_metrics(df: pd.DataFrame) -> dict:
+def _attach_spot(s: pd.DataFrame, spot: pd.DataFrame) -> pd.DataFrame:
+    """把現貨收盤併進某個時段的序列，並算出價差與現貨漲跌。
+    價差 = 該時段期貨收盤 − 同一交易日現貨收盤（正=正價差）。
+    ⚠ 現貨 13:30 收、期貨日盤 13:45 收，兩者相差 15 分鐘，故此價差為近似值。"""
+    s = s.copy()
+    if spot is None or spot.empty:
+        for c in ("s_close", "s_chg", "s_chg_pct", "basis"):
+            s[c] = None
+        return s
+    sp = spot[["date", "s_close"]].copy()
+    sp["date"] = sp["date"].astype(str)
+    s["date"] = s["date"].astype(str)
+    s = s.merge(sp, on="date", how="left")
+    s["s_chg"] = s["s_close"] - s["s_close"].shift(1)
+    s["s_chg_pct"] = (s["s_chg"] / s["s_close"].shift(1) * 100).where(s["s_close"].shift(1).fillna(0) != 0)
+    s["basis"] = s["close"] - s["s_close"]
+    return s
+
+
+def compute_metrics(df: pd.DataFrame, spot: pd.DataFrame = None) -> dict:
     day_s, night_s, full_s = build_sessions(df)
+    day_s, night_s = _attach_spot(day_s, spot), _attach_spot(night_s, spot)
     name = "臺股期貨 TX（大台）" if COMMODITY == "TX" else ("小型臺指 MTX（小台）" if COMMODITY == "MTX" else COMMODITY)
     return {
         "generated_at": dt.datetime.now(TAIPEI).isoformat(timespec="seconds"),
-        "instrument": f"{name} · 近月連續（每日取成交量最大合約）· 資料來源：臺灣期貨交易所",
-        "defs": "日振幅 = 當日最高 − 最低；% = (高−低) ÷ 昨結算 × 100。日盤=08:45–13:45；夜盤=前一日15:00至當日05:00。",
-        # 註：另有「全時段（日盤+夜盤合併）」可算，但前端未使用，為縮小檔案不輸出。
-        # 需要時把下面 "full" 那行取消註解即可。
+        "instrument": f"{name} · 近月連續（每日取成交量最大合約）· 資料來源：期交所、證交所",
+        "defs": "日振幅 = 當日最高 − 最低；% = (高−低) ÷ 昨結算 × 100。日盤=08:45–13:45；夜盤=前一日15:00至當日05:00。"
+                "價差 = 該時段期貨收盤 − 當日現貨(加權指數)收盤；現貨13:30收、期貨13:45收，價差為近似值。",
         "sessions": {
             "day": summarize(day_s, "日盤 08:45–13:45"),
             "night": summarize(night_s, "夜盤 15:00–05:00"),
@@ -436,6 +544,26 @@ def _self_contained_dashboard(out_json_path: str, script_dir: str):
     _log(f"✓ 自包含儀表板：{dest}（雙擊即可看最新資料）")
 
 
+def _synthetic_spot(df: pd.DataFrame) -> pd.DataFrame:
+    """demo 用：由合成期貨日盤收盤價推出一組假現貨（含隨機價差），供版面測試。"""
+    import random
+    random.seed(11)
+    n = _normalize(df.copy())
+    day = _front_month(n)
+    day = day[day["sess"] == "day"].sort_values("date")
+    rows = []
+    for _, r in day.iterrows():
+        c = r["close"]
+        if c is None or (isinstance(c, float) and math.isnan(c)):
+            continue
+        basis = random.gauss(-40, 55)          # 台指常見小幅逆價差
+        rows.append({"date": r["date"], "s_open": round(c - basis - random.gauss(0, 30)),
+                     "s_high": round(c - basis + abs(random.gauss(40, 25))),
+                     "s_low": round(c - basis - abs(random.gauss(40, 25))),
+                     "s_close": round(c - basis)})
+    return pd.DataFrame(rows)
+
+
 def main():
     global COMMODITY
     ap = argparse.ArgumentParser()
@@ -443,6 +571,8 @@ def main():
     ap.add_argument("--years", type=int, default=3)
     ap.add_argument("--out", default="amplitude_data.json")
     ap.add_argument("--cache", default="taifex_tx_cache.csv")
+    ap.add_argument("--spot-cache", default="twse_spot_cache.csv")
+    ap.add_argument("--no-spot", action="store_true", help="不抓現貨（僅期貨振幅）")
     ap.add_argument("--full", action="store_true", help="忽略快取，完整重抓")
     ap.add_argument("--commodity", default="TX", help="TX=大台，MTX=小台")
     ap.add_argument("--no-dashboard", action="store_true", help="不要產生 dashboard_latest.html")
@@ -451,10 +581,12 @@ def main():
 
     if a.demo:
         df = _rename_taifex(_synthetic_raw(a.years))
+        spot = _synthetic_spot(df)
     else:
         df = load_data(a.years, a.cache, force_full=a.full)
+        spot = None if a.no_spot else load_spot(a.years, a.spot_cache, force_full=a.full)
 
-    data = compute_metrics(df)
+    data = compute_metrics(df, spot)
     with open(a.out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))  # 壓縮輸出，縮小檔案
     if not a.no_dashboard:
